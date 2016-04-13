@@ -30,6 +30,11 @@ func RouteAdd(route *Route) error {
 	return routeHandle(route, req, nl.NewRtMsg())
 }
 
+func RouteAppend(route *Route) error {
+	req := nl.NewNetlinkRequest(syscall.RTM_NEWROUTE, syscall.NLM_F_CREATE|syscall.NLM_F_APPEND|syscall.NLM_F_ACK)
+	return routeHandle(route, req, nl.NewRtMsg())
+}
+
 // RouteDel will delete a route from the system.
 // Equivalent to: `ip route del $route`
 func RouteDel(route *Route) error {
@@ -41,8 +46,7 @@ func routeHandle(route *Route, req *nl.NetlinkRequest, msg *nl.RtMsg) error {
 	if (route.Dst == nil || route.Dst.IP == nil) && route.Src == nil && route.Gw == nil {
 		return fmt.Errorf("one of Dst.IP, Src, or Gw must not be nil")
 	}
-
-	family := -1
+  	family := -1
 	var rtAttrs []*nl.RtAttr
 
 	if route.Dst != nil && route.Dst.IP != nil {
@@ -89,7 +93,6 @@ func routeHandle(route *Route, req *nl.NetlinkRequest, msg *nl.RtMsg) error {
 		}
 		rtAttrs = append(rtAttrs, nl.NewRtAttr(syscall.RTA_GATEWAY, gwData))
 	}
-
 	if route.Table > 0 {
 		if route.Table >= 256 {
 			msg.Table = syscall.RT_TABLE_UNSPEC
