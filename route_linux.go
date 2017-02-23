@@ -66,8 +66,12 @@ func (h *Handle) RouteAdd(route *Route) error {
 }
 
 func RouteAppend(route *Route) error {
-	req := nl.NewNetlinkRequest(syscall.RTM_NEWROUTE, syscall.NLM_F_CREATE|syscall.NLM_F_APPEND|syscall.NLM_F_ACK)
-	return pkgHandle.routeHandle(route, req, nl.NewRtMsg())
+	return pkgHandle.RouteAppend(route)
+}
+
+func (h *Handle) RouteAppend(route *Route) error {
+	req := h.newNetlinkRequest(syscall.RTM_NEWROUTE, syscall.NLM_F_CREATE|syscall.NLM_F_EXCL|syscall.NLM_F_ACK)
+	return h.routeHandle(route, req, nl.NewRtMsg())
 }
 
 // RouteDel will delete a route from the system.
