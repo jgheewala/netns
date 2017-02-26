@@ -70,7 +70,7 @@ func RouteAppend(route *Route) error {
 }
 
 func (h *Handle) RouteAppend(route *Route) error {
-	req := h.newNetlinkRequest(syscall.RTM_NEWROUTE, syscall.NLM_F_CREATE|syscall.NLM_F_EXCL|syscall.NLM_F_ACK)
+	req := nl.NewNetlinkRequest(syscall.RTM_NEWROUTE, syscall.NLM_F_CREATE|syscall.NLM_F_APPEND|syscall.NLM_F_ACK)
 	return h.routeHandle(route, req, nl.NewRtMsg())
 }
 
